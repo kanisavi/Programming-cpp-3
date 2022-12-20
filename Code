@@ -1,0 +1,264 @@
+#include <iostream>
+#include <cstring>
+#include <iomanip>
+#include <Windows.h>
+using namespace std;
+int main() {
+	setlocale(0, "Rus");
+	int swap;
+
+	cout << "1 - Заполнить матрицу спиралью\n";
+	cout << "2 - Заполнить матрицу змейкой\n";
+	cout << "Введите номер способа: ";
+	int k, N;
+	cin >> k;
+	cout << "Введите порядок матрицы: ";
+	cin >> N;
+	int** arr = new int*[N];
+	for (int i = 0; i < N; i++)
+		arr[i] = new int[N];
+	int cx = 0, cy = 4;
+	int max_i = N - 1, max_j = N - 1;
+	int min_i = 0, min_j = 0;
+	HANDLE hStdout;
+	COORD destCoord;
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	if (k == 1) {
+		while (min_i < max_i) {
+			for (int i = min_i; i <= max_i; i++) {
+				int j = min_j;
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (i != max_i)
+					cx += 3;
+				else cy += 1;
+			}
+			for (int j = min_j + 1; j <= max_j; j++) {
+				int i = max_i;
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (j != max_j)
+					cy += 1;
+				else
+					cx -= 3;
+			}
+			for (int i = max_i - 1; i >= min_i; i--) {
+				int j = max_j;
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (i != min_i)
+					cx -= 3;
+				else cy -= 1;
+			}
+			for (int j = max_j - 1; j > min_j; j--) {
+				int i = min_i;
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (j != min_j + 1)
+					cy -= 1;
+				else cx += 3;
+			}
+			min_i++;
+			min_j++;
+			max_i--;
+			max_j--;
+
+		}
+	}
+	if (k == 2) {
+		int i = 0;
+		while (i < N) {
+			for (int j = min_j; j <= max_j; j++) {
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (j != max_j)
+					cy += 1;
+				else
+					cx += 3;
+			}
+			i++;
+			for (int j = max_j; j >= min_j; j--) {
+				destCoord.X = cx;
+				destCoord.Y = cy;
+				SetConsoleCursorPosition(hStdout, destCoord);
+				arr[j][i] = (rand() % (N * N)) + 1;
+				cout << arr[j][i];
+				cout.flush();
+				Sleep(100);
+				if (j != min_j)
+					cy -= 1;
+				else
+					cx += 3;
+			}
+			i++;
+		}
+	}
+	destCoord.X = 0;
+	destCoord.Y = N + 4;
+	SetConsoleCursorPosition(hStdout, destCoord);
+
+	cout << "Перестановка блоков:\n ";
+	cout << "1 - по часовой стрелке\n 2 - по диагонали\n 3 - верхние и нижние\n 4 - правые и левые\n";
+	cout << "Введите номер: ";
+	int k_per;
+	cin >> k_per;
+	if (k_per == 1) {
+		for (int i = 0; i < N / 2; i++) {
+			for (int j = 0; j < N / 2; j++) {
+				swap = arr[i][j];
+				arr[i][j] = arr[i + N / 2][j];
+				arr[i + N / 2][j] = swap;
+
+				swap = arr[i + N / 2][j];
+				arr[i + N / 2][j] = arr[i + N / 2][j + N / 2];
+				arr[i + N / 2][j + N / 2] = swap;
+
+				swap = arr[i + N / 2][j + N / 2];
+				arr[i + N / 2][j + N / 2] = arr[i][j + N / 2];
+				arr[i][j + N / 2] = swap;
+			}
+		}
+
+	}
+
+	if (k_per == 2) {
+		for (int i = 0; i < N / 2; i++) {
+			for (int j = 0; j < N / 2; j++) {
+				swap = arr[i][j];
+				arr[i][j] = arr[N / 2 + i][N / 2 + j];
+				arr[N / 2 + i][N / 2 + j] = swap;
+			}
+		}
+		for (int i = N / 2; i < N; i++) {
+			for (int j = 0; j < N / 2; j++) {
+				swap = arr[i][j];
+				arr[i][j] = arr[i - N / 2][N / 2 + j];
+				arr[i - N / 2][N / 2 + j] = swap;
+			}
+		}
+	}
+
+	if (k_per == 3) {
+		for (int i = 0; i < N / 2; i++) {
+			for (int j = 0; j < N / 2; j++) {
+				swap = arr[i][j];
+				arr[i][j] = arr[i + N / 2][j];
+				arr[i + N / 2][j] = swap;
+
+				swap = arr[i + N / 2][j + N / 2];
+				arr[i + N / 2][j + N / 2] = arr[i][j + N / 2];
+				arr[i][j + N / 2] = swap;
+			}
+		}
+	}
+
+	if (k_per == 4) {
+		for (int i = 0; i < N / 2; i++) {
+			for (int j = 0; j < N / 2; j++) {
+				swap = arr[i][j];
+				arr[i][j] = arr[i][j + N / 2];
+				arr[i][j + N / 2] = swap;
+
+				swap = arr[i + N / 2][j + N / 2];
+				arr[i + N / 2][j + N / 2] = arr[i + N / 2][j];
+				arr[i + N / 2][j] = swap;
+			}
+		}
+	}
+	for (int m = 0; m < N; m++) {
+		for (int l = 0; l < N; l++) {
+			cout.width(3);
+			cout << arr[m][l] << " ";
+		}
+		cout << "\n";
+	}
+
+	cout << "\nНажмите 1, чтобы отсортировать элементы: ";
+	int k_sort;
+	cin >> k_sort;
+	int* new_arr = new int[N * N];
+	int count = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			new_arr[count] = arr[i][j];
+			count++;
+		}
+	}
+	for (int i = 1; i < N * N; i++) {
+		for (int j = i; j > 0; j--) {
+			if (new_arr[j - 1] > new_arr[j]) {
+				swap = new_arr[j - 1];
+				new_arr[j - 1] = new_arr[j];
+				new_arr[j] = swap;
+			}
+		}
+	}
+	count = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			arr[i][j] = new_arr[count];
+			count++;
+		}
+	}
+	for (int m = 0; m < N; m++) {
+		for (int l = 0; l < N; l++) {
+			cout.width(3);
+			cout << arr[m][l] << " ";
+		}
+		cout << "\n";
+	}
+	cout << "Возможные действия с элементами: ";
+	cout << "\n 1 - вычитание\n 2 - сложение\n 3 - умножение\n 4 - деление\n";
+	cout << "Введите номер действия: ";
+	int op_n;
+	int num;
+	cin >> op_n;
+	cout << "Введите число: ";
+	cin >> num;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (op_n == 1)
+				arr[i][j] -= num;
+			else if (op_n == 2)
+				arr[i][j] += num;
+			else if (op_n == 3)
+				arr[i][j] *= num;
+			else
+				arr[i][j] /= num;
+		}
+	}
+	for (int m = 0; m < N; m++) {
+		for (int l = 0; l < N; l++) {
+			cout.width(3);
+			cout << arr[m][l] << " ";
+		}
+		cout << "\n";
+	}
+	return 0;
+}
